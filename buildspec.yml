@@ -1,0 +1,31 @@
+veriosn: 0.2
+
+env:
+  variables:
+    AWS_REGION: "us-east-1"
+    AWS_ACCOUNT_ID: "596569993860"
+    CLUSTER: "gl-cluster-test"
+    SERVICE: "gl-test-service"
+    IMAGE_TAG: "latest-dev"
+    REPOSITORY_URI: "596569993860.dkr.ecr.us-east-1.amazonaws.com/gorilla-logic-images"
+
+phases:
+  pre_build:
+    commands:
+      echo Logging in to Amazon ECR
+      eval $(aws ecr get-login --no-include-email --region $AWS_REGION)
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:latest-dev .
+      - docker tag $REPOSITORY_URI:latest-dev $REPOSITORY_URI:$IMAGE_TAG
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Updating fargate service
+      - aws ecs update-service --cluster $CLUSTER --service $SERVICE --force-new-deployment
+artifacts:
+    files: imagedefinitions.json
