@@ -1,9 +1,9 @@
-veriosn: 0.2
+version: 0.2
 
 phases:
   pre_build:
     commands:
-      echo Logging in to Amazon ECR
+      - echo Logging in to Amazon ECR
   build:
     commands:
       - echo Build started on `date`
@@ -13,6 +13,3 @@ phases:
   post_build:
     commands:
       - echo Updating fargate service
-artifacts:
-  files: 
-    - appspec.yaml
