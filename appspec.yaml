@@ -1,0 +1,10 @@
+version: 0.1
+
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: gl-taskdef-test:2
+        LoadBalancerInfo:
+          ContainerName: "gl-contatiner-test"
+          ContainerPort: 3000

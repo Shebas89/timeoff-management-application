@@ -13,3 +13,6 @@ phases:
   post_build:
     commands:
       - echo Updating fargate service
+artifacts:
+  files: 
+    - appspec.yaml
