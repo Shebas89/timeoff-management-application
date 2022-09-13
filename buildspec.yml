@@ -1,13 +1,5 @@
 version: 0.2
-env:
-  variables:
-    AWS_ACCOUNT: "596569993860"
-    AWS_REGION: "us-east-1"
-    ECR_URI: "596569993860.dkr.ecr.us-east-1.amazonaws.com"
-    REPOSITORY_URI: "on-failure"
-    IMAGE_TAG: "latest-dev"
-    CLUSTER: "gl-cluster-dev"
-    SERVICE: "gl-service-dev"
+
 phases:
   install: 
     runtime-versions:
@@ -16,6 +8,13 @@ phases:
   pre_build:
     on-failure: ABORT
     commands:
+      - AWS_ACCOUNT=596569993860
+      - AWS_REGION=us-east-1
+      - ECR_URI=596569993860.dkr.ecr.us-east-1.amazonaws.com
+      - REPOSITORY=gorilla-logic-images
+      - IMAGE_TAG=latest-dev
+      - CLUSTER=gl-cluster-dev
+      - SERVICE=gl-service-dev
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - REPOSITORY_URI=$ECR_URI/latest-dev
       - echo Logging in to Amazon ECR
@@ -25,10 +24,10 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI .
+      - docker build -t $REPOSITORY .
       - echo Build completed on `date`
-      - docker tag $REPOSITORY_URI:latest $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_URI:$IMAGE_TAG
-      - docker push  $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $REPOSITORY:latest $ECR_URI/$REPOSITORY:$IMAGE_TAG
+      - docker push $ECR_URI/$REPOSITORY:$IMAGE_TAG
   post_build:
     on-failure: ABORT
     commands:
