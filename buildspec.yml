@@ -4,11 +4,15 @@ env:
     AWS_ACCOUNT: "596569993860"
     AWS_REGION: "us-east-1"
     ECR_URI: "596569993860.dkr.ecr.us-east-1.amazonaws.com"
-    REPOSITORY_URI: "596569993860.dkr.ecr.us-east-1.amazonaws.com/gorilla-logic-images"
+    REPOSITORY_URI: "gorilla-logic-images"
     IMAGE_TAG: "latest-dev"
     CLUSTER: "gl-cluster-dev"
     SERVICE: "gl-service-dev"
 phases:
+  install: 
+    runtime-versions:
+      python: 3.8
+      nodejs: 10
   pre_build:
     commands:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
@@ -19,12 +23,10 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
+      - docker build -t $REPOSITORY_URI .
       - echo Build completed on `date`
-      - docker tag $REPOSITORY_URI:latest-dev $REPOSITORY_URI:$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:latest-dev $REPOSITORY_URI:$IMAGE_TAG-$COMMIT_HASH
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:latest-dev $REPOSITORY_URI:$IMAGE_TAG-$COMMIT_HASH
+      - docker tag $REPOSITORY_URI:latest $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_URI:$IMAGE_TAG
+      - docker push  $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
       - echo Updating fargate service
