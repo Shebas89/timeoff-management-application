@@ -4,7 +4,7 @@ env:
     AWS_ACCOUNT: "596569993860"
     AWS_REGION: "us-east-1"
     ECR_URI: "596569993860.dkr.ecr.us-east-1.amazonaws.com"
-    REPOSITORY_URI: "gorilla-logic-images"
+    REPOSITORY_URI: "on-failure"
     IMAGE_TAG: "latest-dev"
     CLUSTER: "gl-cluster-dev"
     SERVICE: "gl-service-dev"
@@ -17,7 +17,7 @@ phases:
     on-failure: ABORT
     commands:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - REPOSITORY_URI=$ECR_URI/nativo-web
+      - REPOSITORY_URI=$ECR_URI/on-failure
       - echo Logging in to Amazon ECR
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URI
   build:

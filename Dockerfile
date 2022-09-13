@@ -18,7 +18,8 @@
 FROM node:10-alpine as dependencies
 
 RUN apk add --no-cache \
-    nodejs npm 
+    nodejs npm \
+    python
 
 COPY package.json  .
 RUN npm install 
