@@ -14,12 +14,14 @@ phases:
       python: 3.8
       nodejs: 10
   pre_build:
+    on-failure: ABORT
     commands:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - REPOSITORY_URI=$ECR_URI/nativo-web
       - echo Logging in to Amazon ECR
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URI
   build:
+    on-failure: ABORT
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
@@ -28,6 +30,7 @@ phases:
       - docker tag $REPOSITORY_URI:latest $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_URI:$IMAGE_TAG
       - docker push  $AWS_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_URI:$IMAGE_TAG
   post_build:
+    on-failure: ABORT
     commands:
       - echo Updating fargate service
       - aws ecs update-service --cluster $CLUSTER --service $SERVICE --force-new-deployment
